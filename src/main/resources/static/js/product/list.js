@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	fetchAndDisplayProducts(lastProductId);  // 초기 상품 로딩
 	
 	// 상품 정보를 가져와서 화면에 표시하는 함수
+	
 	function fetchAndDisplayProducts(lastProductId) {
 		
 		const categoryQuery = selectedFilters.categories.join(',');

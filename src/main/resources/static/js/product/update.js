@@ -18,19 +18,18 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
     // DB에 저장된 이미지 파일을 queuedFiles 배열에 삽입.
+    
     const imagesFromDB = document.querySelectorAll('img[data-source="fromDB"]');
     imagesFromDB.forEach((image, index) => {
-      // const imageUrl = image.src;
-      const imageName = image.getAttribute("data-name");  // 이미지 이름을 가져옵니다.
+      const imageName = image.getAttribute("data-name"); 
 
       queuedFiles.push({
         name: imageName,
         source: "fromDB",
       });
   
-      console.log("queuedFiles:", queuedFiles);   // 로그 추가
+      console.log("queuedFiles:", queuedFiles); 
 
-      // 미리보기 엘리먼트 호출
       imagePreviewExpandInit();
     });
     
@@ -279,7 +278,7 @@ document.addEventListener("DOMContentLoaded", function() {
     imgPreviewBoxContainer.addEventListener("mouseover", (event) => {
       event.preventDefault();
       
-      if (event.target.source === "internal" || event.target.source === "fromDB"){
+      if (event.target.source === "internal" || event.target.getAttribute('data-source') === "fromDB"){
         const previewImageSrc = event.target.getAttribute("src");
 
         if (imagePreviewExpand.src !== previewImageSrc) {    

@@ -18,18 +18,17 @@ document.addEventListener("DOMContentLoaded", function() {
     
     // 이미지 업로드 시작 처리 관련 로직 =========================================
 
-    // 기본 dragover 이벤트 설정
+    
     imgPreviewBoxContainer.addEventListener("dragover", function(event) {
       event.preventDefault();
     });
 
-    // 기본 drop 이벤트 설정
+    
     imgPreviewBoxContainer.addEventListener("drop", function(event) {
       event.preventDefault();
       const files = event.dataTransfer?.files;
       
       if (files && files.length > 0) {
-        console.log("File drop operation.")
         const fileList = [...files].sort((a, b) => a.name.localeCompare(b.name));
         handleUpdate(fileList);
       }
@@ -43,8 +42,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
       // 'X' 아이콘을 클릭했을 경우
       if (event.target && event.target.parentElement.className === "delete-icon") {
-        // 해당 이미지를 DOM에서 삭제
-        const parentLi = event.target.closest('.image-preview-box'); // 가장 가까운 li 요소를 찾습니다.
+        const parentLi = event.target.closest('.image-preview-box');
         
         if (parentLi) {
           const index = Array.from(imgPreviewBoxContainer.children).indexOf(parentLi);
@@ -55,9 +53,6 @@ document.addEventListener("DOMContentLoaded", function() {
             // 해당 이미지를 DOM에서 삭제
             parentLi.remove();
           }
-          
-          console.log("Deleted index:", index);  // 로그 추가
-          console.log("Remaining files:", queuedFiles);  // 로그 추가
         }
         return;
       }
@@ -65,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
       // 클릭 이미지 첨부 로직
       const fileInput = document.getElementById("fileInput");
-      fileInput.click(); // 프로그래밍적으로 파일 입력을 클릭합니다.
+      fileInput.click(); // 파일 입력을 클릭.
     });
 
 
@@ -136,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function() {
       });
 
       // 첫번째 이미지 업로드 시에만 실행되는 로직.
-      if (isFirstUpload = true) {
+      if (isFirstUpload) {
         isFirstUpload = false;
         imagePreviewExpandInit();
       }
@@ -151,35 +146,26 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
-    // 배열 요소 교환 함수 (상대적인 순서)
     function moveElement(arr, oldIndex, newIndex) {
       const [movedElement] = arr.splice(oldIndex, 1);
       arr.splice(newIndex, 0, movedElement);
     }
 
-
-
-    // sortable.js 라이브러리 사용. 이미지 순서 변경 기능.
     new Sortable(imgPreviewBoxContainer, {
       animation: 150,
       filter: ".imgPreviewBox",
       preventOnFilter: false,
 
       onStart: function(evt) {
-        console.log("Drag and drop operation started.");;
       },
       onEnd: function(evt) { 
-        console.log("Drag and drop operation ended.");
       },
       onAdd: function(evt) {
-
       },
       onUpdate: function(evt) {
         moveElement(queuedFiles, evt.oldIndex, evt.newIndex);
         console.log(queuedFiles);
-        console.log("Item order changed.");
       }
-
     });
 
 
@@ -188,8 +174,6 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("product-form").addEventListener("submit", async function(event) {
       event.preventDefault();
   
-
-      // 입력 필드들이 비어 있는지 확인
       const isProductCategoryName = document.getElementById("productCategoryName").value.trim();
       const isProductBrandName = document.getElementById("productBrandName").value.trim();
       const isProductName = document.getElementById("productName").value.trim();
@@ -204,25 +188,22 @@ document.addEventListener("DOMContentLoaded", function() {
         return;
       }
 
-      const formData = new FormData(event.target); // 폼 요소로부터 FormData 객체 생성
+      const formData = new FormData(event.target);
 
-      formData.delete("fileInput"); // queuedFiles에 fileInput 이미지가 포함되어 있으므로 중복방지를 위해 삭제.
+      formData.delete("fileInput");
 
-      // productPrice 값을 가져옴.
+
       let productPrice = formData.get("productPrice");
 
-      // productPrice 값에서 특수 문자와 원화 기호를 제거.
       if (productPrice) {
         productPrice = productPrice.replace(/[^0-9]/g, "");
-        formData.set("productPrice", productPrice); // 수정된 값을 다시 설정합니다.
+        formData.set("productPrice", productPrice);
       }
 
-      // 이미지 파일 추가
       queuedFiles.forEach((file, index) => {
         formData.append("productImages", file);
       });
   
-      // 서버로 데이터 전송
       const response = await fetch(event.target.action, {
         method: "POST",
         body: formData
@@ -232,7 +213,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const data = await response.json();
         if (data.status === "success"){
           console.log("Data sent successfully");
-          window.location.href = data.redirectUrl; // 서버에서 받은 URL로 이동
+          window.location.href = data.redirectUrl;
         }
       } else {
         console.log("Error sending data");
@@ -241,8 +222,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
     // 이미지 미리보기 큰 화면 ===================================================
+
     function imagePreviewExpandInit(){
-      const imgPreviewInit = document.querySelector(".image-preview"); // 첫번째 요소만 부른다.
+      const imgPreviewInit = document.querySelector(".image-preview");
       const previewImageSrcInit = imgPreviewInit.getAttribute("src");
 
       imagePreviewExpand.src = previewImageSrcInit;
@@ -252,8 +234,6 @@ document.addEventListener("DOMContentLoaded", function() {
       prevImgTarget = imgPreviewInit;
     }
 
-
-    // 이미지 미리보기 큰 화면
     imgPreviewBoxContainer.addEventListener("mouseover", (event) => {
       event.preventDefault();
       
@@ -318,7 +298,7 @@ document.addEventListener("DOMContentLoaded", function() {
       productSubmit?.classList.remove("--hover");
     });
 
-    // inputNumbersOnly 값을 가진 태그에 keydown 할 시 작동할 로직
+
     $(document).on("keydown", "input:text[inputNumbersOnly]", function(event) {
       // const strVal = $(this).val();
       const key = event.key;
@@ -330,7 +310,6 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     });
     
-    // koreanCurrency 값을 가진 태그를 focus out 할 시 작동할 로직
     $(document).on("focusout", "input:text[koreanCurrency]", function()	{
       $(this).val( $(this).val().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") );
       // 만약 값이 있다면, 
@@ -340,7 +319,6 @@ document.addEventListener("DOMContentLoaded", function() {
       }		
     });
     
-    // koreanCurrency 값을 가진 태그를 focus 할 시 작동할 로직
     $(document).on("focus", "input:text[koreanCurrency]", function()	{	
       $(this).val( $(this).val().replace("￦", ""));
     });
@@ -369,8 +347,6 @@ document.addEventListener("DOMContentLoaded", function() {
       const ulElement = document.getElementById(ulElementId);
       const inputElement = document.getElementById(inputElementId);
   
-
-
       $(inputElement).keyup(function(e) {
         let keyword = $(this).val();
         const ignoredKeys = ["ArrowUp", "ArrowDown"];
@@ -378,6 +354,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (ignoredKeys.includes(e.key)) {
           return;
         }
+
         if (keyword.length >= 1) {
           $.get(ajaxEndpoint, { keyword: keyword })
           .done(function(data) {
@@ -392,7 +369,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
       });
   
-
       function updateAutocompleteList(suggestions) {
         ulElement.innerHTML = "";
         autocompleteDiv.innerHTML = "";
@@ -400,7 +376,6 @@ document.addEventListener("DOMContentLoaded", function() {
         currentFocus = 0;
         let AddAnouncement;
 
-        // 새로운 항목 추가시 안내문
         if (ulElement.id.includes("category")) {
           AddAnouncement = "새로운 카테고리를 추가합니다.";
         } else if (ulElement.id.includes("brand")) {
@@ -425,8 +400,6 @@ document.addEventListener("DOMContentLoaded", function() {
         autocompleteDiv.appendChild(ulElement);
       }
   
-
-
       $(inputElement).keydown(function(e) {
         let items = ulElement.getElementsByTagName("li");
         if (suggestions.length >= 1) {
@@ -444,8 +417,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
       });
   
-
-
       function addActive(items) {
         if (!items) return false;
         removeActive(items);
@@ -454,16 +425,12 @@ document.addEventListener("DOMContentLoaded", function() {
         items[currentFocus].classList.add("autocomplete-active");
       }
   
-
-
       function removeActive(items) {
         for (let i = 0; i < items.length; i++) {
           items[i].classList.remove("autocomplete-active");
         }
       }
   
-
-
       $(inputElement).focusout(function() {
         autocompleteDiv.classList.add("--displayFalse");
       });

@@ -42,7 +42,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductCategoryRepository productCategoryRepository;
     private final ProductBrandRepository productBrandRepository;
-    private final ProductPaginationService productPaginationService;
+//    private final ProductPaginationService productPaginationService;
     private final ProductUtilService productUtilService;
     private final MemberRepository memberRepository; // 송원철
 
@@ -72,38 +72,38 @@ public class ProductService {
 
 
 
-    // LIST (READ)
-    public ProductListResponse getProductList(int page, Pageable pageable,
-                                              String searchType, String searchKeyword,Long memberId) {
-        Pageable adjustedPageable = PageRequest.of(page - 1, pageable.getPageSize(), pageable.getSort());
-
-        Page<ProductDTO> productList;
-
-        if (searchKeyword == null || searchType == null) {
-            productList = productPaginationService.productNoSearchList(adjustedPageable, memberId);
-        } else {
-            productList = productPaginationService.productSearchList(searchType, searchKeyword, adjustedPageable);
-        }
-
-        int nowPage = productList.getPageable().getPageNumber() + 1;
-        int totalPage = productList.getTotalPages();
-        int startPage = productPaginationService.calculateStartPage(nowPage, totalPage);
-        int endPage = productPaginationService.calculateEndPage(nowPage, totalPage);
-
-        return new ProductListResponse(productList, nowPage, startPage, endPage, totalPage, searchType, searchKeyword);
-    }
-
-    @Data
-    @AllArgsConstructor
-    public class ProductListResponse {
-        private Page<ProductDTO> productList;
-        private int nowPage;
-        private int startPage;
-        private int endPage;
-        private int totalPage;
-        private String searchType;
-        private String searchKeyword;
-    }
+//    // LIST (READ)
+//    public ProductListResponse getProductList(int page, Pageable pageable,
+//                                              String searchType, String searchKeyword,Long memberId) {
+//        Pageable adjustedPageable = PageRequest.of(page - 1, pageable.getPageSize(), pageable.getSort());
+//
+//        Page<ProductDTO> productList;
+//
+//        if (searchKeyword == null || searchType == null) {
+//            productList = productPaginationService.productNoSearchList(adjustedPageable, memberId);
+//        } else {
+//            productList = productPaginationService.productSearchList(searchType, searchKeyword, adjustedPageable);
+//        }
+//
+//        int nowPage = productList.getPageable().getPageNumber() + 1;
+//        int totalPage = productList.getTotalPages();
+//        int startPage = productPaginationService.calculateStartPage(nowPage, totalPage);
+//        int endPage = productPaginationService.calculateEndPage(nowPage, totalPage);
+//
+//        return new ProductListResponse(productList, nowPage, startPage, endPage, totalPage, searchType, searchKeyword);
+//    }
+//
+//    @Data
+//    @AllArgsConstructor
+//    public class ProductListResponse {
+//        private Page<ProductDTO> productList;
+//        private int nowPage;
+//        private int startPage;
+//        private int endPage;
+//        private int totalPage;
+//        private String searchType;
+//        private String searchKeyword;
+//    }
 
 
     // 스크롤 페이징 처리 중 =======================================================
@@ -168,24 +168,14 @@ public class ProductService {
             }
         }
 
-
-
         Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "id"));
-        // lastProductId보다 작은 ID를 가진 제품을 찾아서 limit 개수만큼 반환
         Page<ProductEntity> productEntityPage = productRepository.findAll(spec, pageable);
-        // Page 객체에서 List 객체를 가져옴
         List<ProductEntity> productEntities = productEntityPage.getContent();
-
-//        System.out.println("Product Entities: " + productEntities);
 
         // DTO로 변환
         List<ProductDTO> productDTOs = productEntities.stream()
                 .map(ProductDTO::toDTO)
                 .collect(Collectors.toList());
-
-//        System.out.println("Product DTOs: " + productDTOs);
-//        System.out.println(brands);
-//        System.out.println(colors);
 
         return productDTOs;
     }
